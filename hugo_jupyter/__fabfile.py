@@ -2,6 +2,7 @@ import re
 import json
 import sys
 import shlex
+import copy
 import subprocess as sp
 from pathlib import Path
 from datetime import datetime
@@ -104,7 +105,7 @@ def publish():
     local('rm -rf .git/worktrees/public/')
 
     # checkout out gh-pages branch into public
-    local('git worktree add -B master public upstream/master')
+    local('git worktree add -B master public origin/master')
 
     # removing any existing files
     local('rm -rf public/*')
@@ -119,7 +120,7 @@ def publish():
         local('git commit -m "Committing to master (Fabfile)"')
 
     # push to master
-    local('git push upstream master')
+    local('git push origin master')
     print('push succeeded')
 
 
@@ -247,6 +248,7 @@ def update_notebook_metadata(notebook: Union[Path, str],
         'slug': slug,
     }
 
+    old_notebook_data = copy.deepcopy(notebook_data)
     # update front-matter
     notebook_data['metadata']['front-matter'] = front_matter
 
@@ -258,7 +260,8 @@ def update_notebook_metadata(notebook: Union[Path, str],
     notebook_data['metadata']['hugo-jupyter'] = hugo_jupyter
 
     # write over old notebook with new front-matter
-    notebook_path.write_text(json.dumps(notebook_data))
+    if notebook_data != old_notebook_data:
+        notebook_path.write_text(json.dumps(notebook_data))
 
     # make the notebook trusted again, now that we've changed it
     sp.run(['jupyter', 'trust', str(notebook_path)])

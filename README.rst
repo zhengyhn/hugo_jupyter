@@ -16,6 +16,7 @@ Hugo Jupyter
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg
 
 
+The author has no time to maintain and There are some bugs. So I fixed it and let it stay in my repository.
 
 Publish Jupyter_ notebooks with Hugo_.
 
